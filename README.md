@@ -28,7 +28,7 @@ Claude Code / Cursor
 
 ## Prerequisites
 
-- [ ] CockroachDB Cloud Serverless cluster ([create one here](https://cockroachlabs.cloud))
+- [ ] CockroachDB Cloud Serverless cluster 
 - [ ] CockroachDB Managed MCP Server enabled on your cluster
 - [ ] AWS account with Bedrock model access enabled (Claude or Titan embeddings)
 - [ ] Python 3.11+
