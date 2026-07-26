@@ -6,7 +6,6 @@
 [![CockroachDB](https://img.shields.io/badge/CockroachDB-Cloud_Serverless-6933FF)](https://cockroachlabs.cloud)
 [![AWS](https://img.shields.io/badge/AWS-Bedrock_|_Lambda_|_S3-FF9900)](https://aws.amazon.com/bedrock/)
 
-*Built for the CockroachDB × AWS Hackathon by Akash Naickar*
 
 ## Overview
 
