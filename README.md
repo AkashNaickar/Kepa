@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">
 
 # 🧠 Kepa
 
@@ -246,4 +246,4 @@ Contributions are welcome! Please open an issue or PR. See the [LICENSE](LICENSE
 Built by Akash Naickar for the CockroachDB × AWS Hackathon
 
 </div>
-]]>
+
