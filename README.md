@@ -3,8 +3,14 @@
 > A memory layer for coding agents that persists decisions and bug fixes in CockroachDB and retrieves them via MCP.
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![CI](https://github.com/AkashNaickar/Kepa/actions/workflows/ci.yml/badge.svg)](https://github.com/AkashNaickar/Kepa/actions/workflows/ci.yml)
 [![CockroachDB](https://img.shields.io/badge/CockroachDB-Cloud_Serverless-6933FF)](https://cockroachlabs.cloud)
 [![AWS](https://img.shields.io/badge/AWS-Bedrock_|_Lambda_|_S3-FF9900)](https://aws.amazon.com/bedrock/)
+
+> **Status:** the capture pipeline is implemented and unit-tested with injected
+> clients. There is **no live demo yet** — running it end-to-end requires your
+> own AWS (Bedrock + S3) and CockroachDB Cloud credentials. See
+> [Demo status](#demo-status).
 
 
 ## Overview
@@ -45,17 +51,24 @@ flowchart TD
 
 ```
 kepa/
-├── infra/
-│   └── schema.sql            # CockroachDB memory table + vector index
 ├── capture/
-│   ├── handler.py            # Lambda function (Python 3.11)
+│   ├── pipeline.py           # Pure capture pipeline (injected clients)
+│   ├── aws_clients.py        # Bedrock / S3 / CockroachDB adapters
+│   ├── handler.py            # Lambda entry point (fail-closed signature check)
 │   ├── iam-policy.json       # Least-privilege IAM policy
 │   └── s3-bucket.sh          # S3 bucket creation script
+├── tests/
+│   ├── test_pipeline.py      # Unit tests for the pure pipeline
+│   └── test_handler.py       # Lambda handler tests with fakes
+├── infra/
+│   └── schema.sql            # CockroachDB memory table + vector index
 ├── recall/
 │   └── README.md             # MCP config for Claude Code + Cursor
 ├── demo-repo/
 │   └── README.md             # Throwaway repo for the live demo
 ├── .env.example              # Required environment variables
+├── requirements-dev.txt      # pytest + ruff
+├── SECURITY.md / CONTRIBUTING.md / CODE_OF_CONDUCT.md
 ├── .gitignore
 ├── LICENSE                   # Apache 2.0
 └── README.md
@@ -120,15 +133,40 @@ In your repo → **Settings → Webhooks → Add webhook**:
 
 See [`recall/README.md`](recall/README.md) for Claude Code and Cursor MCP config.
 
-## Running the Demo
-
-### Quick local test (no AWS needed)
+## Quick start (tests, no cloud needed)
 
 ```bash
-python capture/handler.py
+git clone https://github.com/AkashNaickar/Kepa.git
+cd Kepa
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+# source .venv/bin/activate   # macOS/Linux
+pip install -r requirements-dev.txt
+pytest -q
 ```
 
-Runs the full pipeline with stub implementations — no real API calls, just log output for each step.
+All 22 tests pass without AWS or network access — the pipeline logic in
+`capture/pipeline.py` is pure and takes injected clients (see
+`tests/test_pipeline.py` for fakes you can reuse).
+
+## Running the Demo
+
+### Demo status
+
+**No live demo is deployed.** Kepa's runtime is an AWS Lambda that calls
+Amazon Bedrock and writes to CockroachDB Cloud Serverless — it cannot run on
+Render/Vercel without those credentials, and none are provisioned for a
+public demo. To run it yourself, complete the setup below (steps 1–5) with
+your own accounts.
+
+### Local pipeline test (no AWS needed)
+
+```bash
+python -m pytest tests/test_pipeline.py -q
+```
+
+Runs the full capture→summarize→embed→store flow against fake clients and
+asserts on the memory record that would be written.
 
 ### End-to-end
 
