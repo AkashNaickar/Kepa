@@ -107,7 +107,8 @@ class TestClassifyEvent:
         assert classify_event(REVIEW_PAYLOAD) == "review_comment"
 
     def test_unmerged_pr_is_decision(self) -> None:
-        payload = {**MERGED_BUG_PR, "pull_request": {**MERGED_BUG_PR["pull_request"], "merged": False}}
+        pr = {**MERGED_BUG_PR["pull_request"], "merged": False}
+        payload = {**MERGED_BUG_PR, "pull_request": pr}
         assert classify_event(payload) == "decision"
 
 
